@@ -1,0 +1,6 @@
+/build.sh
+/CMakeLists.txt
+/lib/granul.cpp
+/lib/granul.h
+/lib/meikon.h
+/main.cpp
