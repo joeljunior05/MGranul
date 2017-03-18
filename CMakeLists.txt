@@ -17,4 +17,3 @@ add_library( lib_granul
 add_executable(mgranul main.cpp)
 
 target_link_libraries( mgranul ${OpenCV_LIBS} lib_granul)
-

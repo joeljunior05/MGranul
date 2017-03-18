@@ -1,24 +1,5 @@
 #include "granul.h"
-
-const int means_right[] = { 1, 1, 1, 0,
-				1, 1, 1, 1,
-				1, 1, 1, 1, 1,
-				1, 1, 1,
-				1, 1,
-				1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1,
-				1, 1, 1,
-				1, 1, 0, 0,
-				1, 1, 0,
-				1, 1, 0,
-				1, 1,
-				1, 1,
-				1,
-				1, 1, 1,
-				1, 1, 1, 1, 1,
-				1, 1, 1, 1, 1,
-				1, 1, 1, 0,
-				1, 1, 1, 1, 1 };
+#include <fstream>
 
 // AUX FUNCTIONS
 
@@ -381,7 +362,7 @@ void createKernelRectangle(float lengthL, float lengthC, float angle, vector<KER
 
 void createKernelSquare(float length, float angle, vector<KERNEL>& output, int op){ // angle in degrees
 	createKernelRectangle(length, length, angle, output, op);
-	(*output.end()).shape 	= 's';
+	output[output.size() - 1].shape 	= 's';
 }
 
 void createKernelEllipse(float lengthL, float lengthC, float angle, vector<KERNEL>& output, int op){
@@ -856,7 +837,7 @@ void computeIntersection(MATRIZ<MAXLOCAL>& n_out, MAXLOCAL &loc, float maxInt){
 
 }
 
-void filtrate(vector<MAXLOCAL> in, vector<MAXLOCAL>& out, float minCorr, float maxInter, Size size){
+void sift(vector<MAXLOCAL> in, vector<MAXLOCAL>& out, float minCorr, float maxInter, Size size){
 	if(in.size() <= 1)
 		return;
 	
@@ -896,7 +877,7 @@ void filtrate(vector<MAXLOCAL> in, vector<MAXLOCAL>& out, float minCorr, float m
 	out = aux;
 }
 
-void filtrate(vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double minCorrCir, double maxInterCir, double minCorrRet, double maxInterRet,
+void sift(vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double minCorrCir, double maxInterCir, double minCorrRet, double maxInterRet,
               double minCorrQua, double maxInterQua, double minCorrEli, double maxInterEli, Size size){
 	if(in.size() <= 1)
 		return;
@@ -997,7 +978,7 @@ void putMAXLOCALOnMatrix(MATRIZ<vector<DBL>>& n_out, MAXLOCAL &loc, DBL value){
 
 }
 
-void filtrateMSER(Mat img, vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double minCorrMSER){
+void siftMSER(Mat img, vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double minCorrMSER){
 	if(in.size() <= 1)
 		return;
 

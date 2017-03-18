@@ -436,7 +436,7 @@ void filtra(int argc, char** argv)
 
   printf("Filtrando os maximos locais com interseccao>maxInter...\n");
   vector<MAXLOCAL> w;
-  filtrate(v, w, minCorrCir,maxInterCir,minCorrRet,maxInterRet,minCorrQua,maxInterQua,minCorrEli,maxInterEli, ent.size());
+  sift(v, w, minCorrCir,maxInterCir,minCorrRet,maxInterRet,minCorrQua,maxInterQua,minCorrEli,maxInterEli, ent.size());
   printf("Numero de maximos locais apos filtro interseccao=%lu\n",w.size());
 
   if (getSuffix(argv[3])=="ho2") {
@@ -590,12 +590,12 @@ void msgranul(int argc, char** argv) //It will find by granul correlations from 
 
   printf("Filtrando os maximos locais com interseccao>maxInter...\n");
   vector<MAXLOCAL> w;
-  filtrate(v, w, minCorrCir,maxInterCir,minCorrRet,maxInterRet,minCorrQua,maxInterQua,minCorrEli,maxInterEli, ent.size());
+  sift(v, w, minCorrCir,maxInterCir,minCorrRet,maxInterRet,minCorrQua,maxInterQua,minCorrEli,maxInterEli, ent.size());
   printf("Numero de maximos locais originais=%lu\n",w.size());
   printf("Filtrando os maximos locais com MSER...\n");
   v = w;
   w.clear();
-  filtrateMSER(entC, v, w, minCorrMSER);
+  siftMSER(entC, v, w, minCorrMSER);
   printf("Numero de maximos locais apos filtro interseccao=%lu\n",w.size());
 
   if (getSuffix(argv[3])=="ho2") {
@@ -720,12 +720,12 @@ void msgranul_kmeans(int argc, char** argv) //It will find by granul correlation
 
   printf("Filtrando os maximos locais com interseccao>maxInter...\n");
   vector<MAXLOCAL> w;
-  filtrate(v, w, minCorrCir,maxInterCir,minCorrRet,maxInterRet,minCorrQua,maxInterQua,minCorrEli,maxInterEli, ent.size());
+  sift(v, w, minCorrCir,maxInterCir,minCorrRet,maxInterRet,minCorrQua,maxInterQua,minCorrEli,maxInterEli, ent.size());
   printf("Numero de maximos locais originais=%lu\n",w.size());
   printf("Filtrando os maximos locais com MSER...\n");
   v = w;
   w.clear();
-  filtrateMSER(entC, v, w, minCorrMSER);
+  siftMSER(entC, v, w, minCorrMSER);
   printf("Numero de maximos locais apos filtro interseccao=%lu\n",w.size());
 
   printf("Filtrando os maximos locais com Kmeans...\n");
@@ -746,7 +746,7 @@ void msgranul_kmeans(int argc, char** argv) //It will find by granul correlation
 
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< main <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 const char about[]=
-"< MGranul.exe: Programas para granulometria multi-formas v1.15>\n"
+"< MGranul.exe: Programas para granulometria multi-formas v1.2>\n"
 "_______________________________________________________________________________\n";
 
 const char help[]=

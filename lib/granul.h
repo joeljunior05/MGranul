@@ -118,8 +118,8 @@ void createKernels(vector<KERNEL> &output, char type, float lengthL, float lengt
 void correlation(Mat in, Mat &out, KERNEL ker, int type=CV_TM_CCORR);
 void correlationInBatch(Mat& img, vector<MAXLOCAL> &out, vector<KERNEL> kers, float minCorr=0, int maxDist=2, int type=CV_TM_CCORR);
 void computeIntersection(Mat_<MAXLOCAL>& n_out, MAXLOCAL& loc, float maxInt=1);
-void filtrate(vector<MAXLOCAL> v, vector<MAXLOCAL>& w, float minCorr, float maxInter, Size size);
-void filtrate(vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double minCorrCir, double maxInterCir, double minCorrRet, double maxInterRet,
+void sift(vector<MAXLOCAL> v, vector<MAXLOCAL>& w, float minCorr, float maxInter, Size size);
+void sift(vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double minCorrCir, double maxInterCir, double minCorrRet, double maxInterRet,
               double minCorrQua, double maxInterQua, double minCorrEli, double maxInterEli, Size size);
-void filtrateMSER(Mat img, vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double minCorrMSER);
+void siftMSER(Mat img, vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double minCorrMSER);
 void chooseKmeans(Mat img, vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double num_k);

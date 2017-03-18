@@ -18,7 +18,7 @@ using namespace std;
 
 // MATRIZ
 
-inline int modulo(int a, int b) // OK. Sempre retorna numero nao-negativo entre [0,b-1]
+inline int modulo(int a, int b) // Returns always a non-negative number between [0,b-1]
 { if (b<0) { a=-a; b=-b; }
   int d=a%b;
   if (d<0) d=d+b;
@@ -75,7 +75,7 @@ class MATRIZ {
   }
 
   MATRIZ<T>(): MATRIZ<T>(0,0)  
-  { //cout << "default ctor" << endl;
+  { 
   }
 
   MATRIZ<T>(unsigned par_nl, unsigned par_nc, T e1): MATRIZ<T>(par_nl,par_nc)
@@ -91,32 +91,24 @@ class MATRIZ {
       it++;
     }
     assert(it==end(args));
-    //cout << "initializer ctor" << endl << *this << endl;
   }
-
-//   ~MATRIZ<T>() // vet vai chamar dtor automaticamente
-//   { //cout << "dtor" << endl << *this << endl;
-//   }
   
   //<<< copy ctor
   MATRIZ<T>(const MATRIZ<T>& a) : MATRIZ<T>(a.rows,a.cols) 
-  { vet=a.vet; // copia vet.
+  { vet=a.vet; // copy vet.
     backgv=a.backgv;
-    //cout << "copy ctor" << endl << *this << endl;
   }
 
   //<<< copy assign
   MATRIZ<T>& operator=(const MATRIZ<T>& a)
   { if (this == &a) {
-      //cout << "self copy assign" << endl << *this << endl;
       return *this; // beware of self-assignment: x=x
     }
     if (a.total!=(*this).total) {
       vet.resize(a.total);
     }
-    vet=a.vet; // copia vet
+    vet=a.vet; // copy vet
     backgv=a.backgv;
-    //cout << "copy assign" << endl << *this << endl;
     return *this;
   }
 
@@ -125,30 +117,27 @@ class MATRIZ {
   { rows=a.rows; cols=a.cols; total=a.total; backgv=a.backgv;
     vet=move(a.vet);
     a.rows=a.cols=a.total=0;
-    //cout << "move ctor" << endl << *this << endl;
   }
 
   //<<<move assign
   MATRIZ<T>& operator=(MATRIZ<T>&& a)
   { if (this == &a) {
-      //cout << "self move assign" << endl << *this << endl;
       return *this; // beware of self-assignment: x=x
     }
     vet=move(a.vet);
     rows=a.rows; cols=a.cols; total=a.total; backgv=a.backgv;
     a.rows=a.cols=a.total=0;
-    //cout << "move assign" << endl << *this << endl;
     return *this;
   }
 
-  //<<<funcoes reserve, push, pop
+  //<<<functions reserve, push, pop
   unsigned capacity() const 
-  // Retorna numero de linhas reservadas
+  // Return number of allocated lines
   { return vet.capacity() / cols;
   }
 
   void reserve(unsigned sz)
-  // sz e' numero de linhas
+  // sz means number of lines
   { vet.reserve(sz*cols);
   }
 
@@ -173,7 +162,7 @@ class MATRIZ {
     vet.resize(total);
   }
 
-  //<<< Funcoes de acesso
+  //<<< Access functions
   T& operator() (unsigned l, unsigned c)
   { assert(l<rows && c<cols);
     return vet[l*cols+c]; 
@@ -183,39 +172,28 @@ class MATRIZ {
     return vet[i]; 
   }
 
-  T& atf(unsigned i) { // Free - Sem verificacao de indice invalido
+  T& atf(unsigned i) { // Free - Not verify index
     return vet[i];
   }
-  T& ate(unsigned i) { // Modo geracao de erro se indexar fora do dominio
+  T& ate(unsigned i) { // Error - Throws error in case of index is out the bound.
     if (i<total) return vet[i];
     else erro("Erro MATRIZ Indice invalido");
   }
-  T& atf(unsigned l, unsigned c) { // Free - Sem verificacao de indice invalido
+  T& atf(unsigned l, unsigned c) { // Free - Not verify index
     return vet[l*cols+c];
   }
-  T& atn(unsigned l, unsigned c) { // Modo normal com backg
+  T& atn(unsigned l, unsigned c) { // Background mode
     if (rows<=l || cols<=c) return backgv;
     else return vet[l*cols+c];
   }
-  T& ate(unsigned l, unsigned c) { // Modo geracao de erro se indexar fora do dominio
+  T& ate(unsigned l, unsigned c) { // Error - Throws error in case of index is out the bound.
     if (rows<=l || cols<=c)
       erro("Erro MATRIZ Indice invalido");
     return vet[l*cols+c];
   }
-  T& atr(int l, int c) { // Modo replicado
+  T& atr(int l, int c) { // Replicated mode
     return vet[modulo(l,rows)*cols+modulo(c,cols)];
   }
-
-//   const T& operator() (unsigned l, unsigned c) const
-//   { assert(l<rows && c<cols);
-//     cout << "const operator(l,c)" << endl;
-//     return vet[l*cols+c]; 
-//   }
-
-//   const T& operator() (unsigned i) const
-//   { assert(i<n);
-//     return vet[i]; 
-//   }
 
   unsigned nl() const { return rows; }
   unsigned nc() const { return cols; }
