@@ -5,12 +5,15 @@
 
 Mat_<GRY> global;
 
-int evenToOdd(int val){
-	if(val%2 == 0)
+int evenToOdd(double val){
+	int ret = ceil(val);
+	if(ret%2 == 0)
 	{
-		return val + 1;
+		return ret + 1;
 	}
-	return val;
+	return ret;
+
+	//return 2*cvRound(ceil((val-1.0)/2.0))+1;
 }
 
 void sumAndShow(Mat_<FLT> &matF){
@@ -31,7 +34,23 @@ void sumAndShow(Mat_<FLT> &matF){
 	cout << "NEG = " << neg_counter << endl;
 }
 
+void NegPosUm(Mat_<FLT>& f)
+// Faz a somatoria dos negativos dar -1 e dos positivos dar +1.
+{ double pos=0.0;
+  double neg=0.0;
+  for (MatIterator_<FLT> fi=f.begin(); fi!=f.end(); fi++) {
+    if (*fi>0.0) pos += *fi;
+    else neg -= *fi;
+  } 
+  if (pos<=0.0 || neg<=0.0) erro("Erro: NegPosUm divisao zero");
+  for (MatIterator_<FLT> fi=f.begin(); fi!=f.end(); fi++) {
+    if (*fi>0.0) *fi /= pos;
+    else *fi /= neg;
+  }
+}
+
 void normalizeFLT(Mat_<FLT> &matF, FLT target, FLT overall){
+	
 	unsigned int counter = 0;
 
 	for(int l = 0; l < matF.rows; l++){
@@ -44,7 +63,7 @@ void normalizeFLT(Mat_<FLT> &matF, FLT target, FLT overall){
 	if(counter == 0)
 		return;
 
-	FLT piece = overall / counter;
+	FLT piece = overall / ((float) counter);
 
 	for(int l = 0; l < matF.rows; l++){
 		for(int c = 0; c < matF.cols; c++){
@@ -134,7 +153,7 @@ bool isInsideKernel(int r, int c, MAXLOCAL m){
 
 		FLT distance = sqrt((m.li - r)*(m.li - r) + (m.ci - c)*(m.ci - c));
 
-		if(distance <= (m.d1/2)){
+		if(distance <= ceil(m.d1/2)){
 			return true;
 		}
 
@@ -147,8 +166,8 @@ bool isInsideKernel(int r, int c, MAXLOCAL m){
 		rot_c = rot_mat.at<double>(0,0) * c + rot_mat.at<double>(0,1) * r + rot_mat.at<double>(0,2);
 		rot_r = rot_mat.at<double>(1,0) * c + rot_mat.at<double>(1,1) * r + rot_mat.at<double>(1,2);
 
-		if(rot_c >= m.ci - m.d2/2 && rot_c <= m.ci + m.d2/2 
-			&& rot_r >= m.li - m.d1/2 && rot_r <= m.li + m.d1/2) return true;
+		if(rot_c >= ceil(m.ci - m.d2/2) && rot_c <= ceil(m.ci + m.d2/2) 
+			&& rot_r >= ceil(m.li - m.d1/2) && rot_r <= ceil(m.li + m.d1/2)) return true;
 
 
 	} else if (type =='e'){ //case ellipse
@@ -163,7 +182,7 @@ bool isInsideKernel(int r, int c, MAXLOCAL m){
 		rot_c = abs(rot_c - m.ci);
 		rot_r = abs(rot_r - m.li);
 
-		return (rot_c * rot_c) / (m.d2/2 * m.d2/2) + (rot_r * rot_r) / (m.d1/2 * m.d1/2)
+		return (rot_c * rot_c) / ceil(m.d2/2 * m.d2/2) + (rot_r * rot_r) / ceil(m.d1/2 * m.d1/2)
                 <= 1.0;
 
 	} else {
@@ -277,7 +296,7 @@ void printTextMAXLOCAL(vector<MAXLOCAL>& v, char* fileName){
 
 // KERNEL FUNCTIONS
 
-void createKernelCircle(float diameter, vector<KERNEL>& output, int op){
+void createKernelCircle(double diameter, vector<KERNEL>& output, int op){
 	KERNEL tempK 	= KERNEL();
 	int d			= evenToOdd(sqrt(2.0)*diameter) + BOUND_PIXELS; // TODO: Provide round function
 	tempK.shape 	= 'c';
@@ -286,48 +305,129 @@ void createKernelCircle(float diameter, vector<KERNEL>& output, int op){
 	tempK.imgF	= Mat_<FLT>(d, d);
 	tempK.imgF	= 0;
 	tempK.imgG	= cv::Mat_<GRY>(d, d, 128);
-	int cW = (tempK.imgF.cols+1)/2;
-	int cH = (tempK.imgF.rows+1)/2;
+	int cW = (tempK.imgF.cols)/2;
+	int cH = (tempK.imgF.rows)/2;
+
+	double radius = cvRound(diameter);
 
 	if(op < 1){
 
-		circle(tempK.imgF, Point_<int>(cW, cH), (sqrt(2.0)*diameter)/2, Scalar(+1.0), CV_FILLED);
-		circle(tempK.imgF, Point_<int>(cW, cH), diameter/2, Scalar(-1.0), CV_FILLED);
+		if(radius >= 5){
+			circle(tempK.imgF, Point_<int>(cW, cH), ceil(sqrt(2.0)*diameter/2), Scalar(+1.0), CV_FILLED);
+			circle(tempK.imgF, Point_<int>(cW, cH), ceil(diameter/2), Scalar(-1.0), CV_FILLED);
+		} else if (radius == 4) {
+			FLT vkernel[]={ 0, 0, 0, 0, 0, 0, 0, 0, 0,
+							0, 0, 0, 0, 1, 0, 0, 0, 0,
+							0, 0, 0, 1,-1, 1, 0, 0, 0,
+							0, 0, 1,-1,-1,-1, 1, 0, 0,
+							0, 1,-1,-1,-1,-1,-1, 1, 0,
+							0, 0, 1,-1,-1,-1, 1, 0, 0,
+							0, 0, 0, 1,-1, 1, 0, 0, 0,
+							0, 0, 0, 0, 1, 0, 0, 0, 0,
+							0, 0, 0, 0, 0, 0, 0, 0, 0};
+			Mat_<FLT> kernel(9,9,vkernel);
+			tempK.imgF = kernel.clone();
+		} else if (radius == 3) {
+			FLT vkernel[]={ 0, 0, 0, 0, 0, 0, 0,
+							0, 1, 1, 1, 1, 1, 0,
+							0, 1,-1,-1,-1, 1, 0,
+							0, 1,-1,-1,-1, 1, 0,
+							0, 1,-1,-1,-1, 1, 0,
+							0, 1, 1, 1, 1, 1, 0,
+							0, 0, 0, 0, 0, 0, 0};
+			Mat_<FLT> kernel(7,7,vkernel);
+			tempK.imgF = kernel.clone();
+		} else if (radius == 2) {
+			FLT vkernel[]={ 0, 0, 1, 0, 0,
+							0, 1,-1, 1, 0,
+							1,-1,-1,-1, 1,
+							0, 1,-1, 1, 0,
+							0, 0, 1, 0, 0};
+			Mat_<FLT> kernel(5,5,vkernel);
+			tempK.imgF = kernel.clone();
+		} else if (radius == 1) {
+			FLT vkernel[]={ 1, 1, 1,
+							1,-1, 1,
+							1, 1, 1};
+			Mat_<FLT> kernel(3,3,vkernel);
+			tempK.imgF = kernel.clone();
+		}
 
 		normalizeFLT(tempK.imgF, +1.0, +1.0);
 		normalizeFLT(tempK.imgF, -1.0, -1.0);
+
+		//NegPosUm(tempK.imgF);
 
 	}
 
 	if(op == -1 || op == 1){
 
-		circle(tempK.imgG, Point_<int>(cW, cH), (sqrt(2.0)*diameter)/2, Scalar(255), CV_FILLED);
-		circle(tempK.imgG, Point_<int>(cW, cH), diameter/2, Scalar(0), CV_FILLED);
+		if(radius >= 5){
+			circle(tempK.imgG, Point_<int>(cW, cH), ceil(sqrt(2.0)*diameter/2), Scalar(255), CV_FILLED);
+			circle(tempK.imgG, Point_<int>(cW, cH), ceil(diameter/2), Scalar(0), CV_FILLED);
+		} else if (radius == 4) {
+			GRY vkernel[]={ 128, 128, 128, 128, 128, 128, 128, 128, 128,
+							128, 128, 128, 128, 255, 128, 128, 128, 128,
+							128, 128, 128, 255,   0, 255, 128, 128, 128,
+							128, 128, 255,   0,   0,   0, 255, 128, 128,
+							128, 255,   0,   0,   0,   0,   0, 255, 128,
+							128, 128, 255,   0,   0,   0, 255, 128, 128,
+							128, 128, 128, 255,   0, 255, 128, 128, 128,
+							128, 128, 128, 128, 255, 128, 128, 128, 128,
+							128, 128, 128, 128, 128, 128, 128, 128, 128};
+			Mat_<GRY> kernel(9,9,vkernel);
+			tempK.imgG = kernel.clone();
+		} else if (radius == 3) {
+			GRY vkernel[]={ 128, 128, 128, 128, 128, 128, 128,
+							128, 255, 255, 255, 255, 255, 128,
+							128, 255,   0,   0,   0, 255, 128,
+							128, 255,   0,   0,   0, 255, 128,
+							128, 255,   0,   0,   0, 255, 128,
+							128, 255, 255, 255, 255, 255, 128,
+							128, 128, 128, 128, 128, 128, 128};
+			Mat_<GRY> kernel(7,7,vkernel);
+			tempK.imgG = kernel.clone();
+		} else if (radius == 2) {
+			GRY vkernel[]={ 128, 128, 255, 128, 128,
+							128, 255,   0, 255, 128,
+							255,   0,   0,   0, 255,
+							128, 255,   0, 255, 128,
+							128, 128, 255, 128, 128};
+			Mat_<GRY> kernel(5,5,vkernel);
+			tempK.imgG = kernel.clone();
+		} else if(radius == 1){
+			GRY vkernel[]={ 255, 255, 255,
+							255,   0, 255,
+							255, 255, 255};
+			Mat_<GRY> kernel(3,3,vkernel);
+			tempK.imgG = kernel.clone();
+		}
 	}
 
 	output.push_back(tempK);
 }
 
-void createKernelRectangle(float lengthL, float lengthC, float angle, vector<KERNEL>& output, int op){ // angle in degrees
+void createKernelRectangle(double lengthL, double lengthC, double angle, vector<KERNEL>& output, int op){ // angle in degrees
 	KERNEL tempK 	= KERNEL();
 	int d1		= evenToOdd(sqrt(2.0)*lengthL)+BOUND_PIXELS; // TODO: Provide round function
 	int d2		= evenToOdd(sqrt(2.0)*lengthC)+BOUND_PIXELS; // TODO: Provide round function
+	cout << d1 << " " << d2;
 	tempK.shape 	= 'r';
 	tempK.d1 		= lengthL;
 	tempK.d2 		= lengthC;
 	tempK.ang 	= angle;
-	tempK.imgF	= Mat_<FLT>(d1, d2);
+	tempK.imgF	= Mat_<FLT>(d2, d1);
 	tempK.imgF	= 0;
-	tempK.imgG	= Mat_<GRY>(d1, d2, 128);
+	tempK.imgG	= Mat_<GRY>(d2, d1, 128);
 
-	int cW = (tempK.imgF.cols+1)/2;
-	int cH = (tempK.imgF.rows+1)/2;
+	int cW = (tempK.imgF.cols)/2;
+	int cH = (tempK.imgF.rows)/2;
 
-	int bL1 = (sqrt(2.0)*lengthL/2); // bound
-	int bL2 = (sqrt(2.0)*lengthC/2); // bound
+	int bL1 = ceil((sqrt(2.0)*lengthL/2)); // bound
+	int bL2 = ceil((sqrt(2.0)*lengthC/2)); // bound
 
-	int kL1 = (lengthL/2);
-	int kL2 = (lengthC/2);
+	int kL1 = ceil(lengthL/2);
+	int kL2 = ceil(lengthC/2);
 
 	if(op < 1){
 
@@ -360,12 +460,16 @@ void createKernelRectangle(float lengthL, float lengthC, float angle, vector<KER
 	output.push_back(tempK);
 }
 
-void createKernelSquare(float length, float angle, vector<KERNEL>& output, int op){ // angle in degrees
-	createKernelRectangle(length, length, angle, output, op);
+void createKernelSquare(double length, double angle, vector<KERNEL>& output, int op){ // angle in degrees
+	if((length/2) > 4)
+		createKernelRectangle(length, length, angle, output, op);
+	else
+		createKernelCircle(length, output, op);
+
 	output[output.size() - 1].shape 	= 's';
 }
 
-void createKernelEllipse(float lengthL, float lengthC, float angle, vector<KERNEL>& output, int op){
+void createKernelEllipse(double lengthL, double lengthC, double angle, vector<KERNEL>& output, int op){
 	KERNEL tempK 	= KERNEL();
 	int d		= evenToOdd(sqrt(2.0)*max(lengthL,lengthC))+BOUND_PIXELS; // TODO: Provide round function
 	tempK.shape 	= 'e';
@@ -376,14 +480,14 @@ void createKernelEllipse(float lengthL, float lengthC, float angle, vector<KERNE
 	tempK.imgF	= 0;
 	tempK.imgG	= Mat_<GRY>(d, d, 128);
 
-	int cC = (tempK.imgF.cols+1)/2;
-	int cL = (tempK.imgF.rows+1)/2;
+	int cC = (tempK.imgF.cols)/2;
+	int cL = (tempK.imgF.rows)/2;
 
-	int bLL = (sqrt(2.0)*lengthL/2); // bound
-	int bLC = (sqrt(2.0)*lengthC/2); // bound
+	int bLL = ceil(sqrt(2.0)*lengthL/2); // bound
+	int bLC = ceil(sqrt(2.0)*lengthC/2); // bound
 
-	int kLL = (lengthL/2);
-	int kLC = (lengthC/2);
+	int kLL = ceil(lengthL/2);
+	int kLC = ceil(lengthC/2);
 
 	if(op < 1){
 
@@ -429,9 +533,9 @@ void createKernelGeneric(Mat_<FLT> fltM, Mat_<GRY> gryM, vector<KERNEL>& output,
 	output.push_back(tempK);
 }
 
-void createKernels(vector<KERNEL> &out, char type, float lengthL, float lengthC, float escOitava, float escMax , float escMin, float angStep ){
+void createKernels(vector<KERNEL> &out, char type, double lengthL, double lengthC, double escOitava, double escMax , double escMin, double angStep ){
 	double nOitavas=gLog2(escMax/escMin);
-	int nFormas= round(nOitavas*escOitava+1);
+	int nFormas= cvRound(nOitavas*escOitava+1);
 
 	if (type =='c'){ //case circle
 		for (int e=0; e<nFormas; e++) {
@@ -441,7 +545,7 @@ void createKernels(vector<KERNEL> &out, char type, float lengthL, float lengthC,
 		}
 
 	} else if (type =='s'){ //case square
-		for (int e=0; e<nFormas; e++) {
+	   	for (int e=0; e<nFormas; e++) {
 			for (double a=0; a<90; a += angStep) {
 				double esc=escMax*pow(2, double(-e)/escOitava);
 
@@ -617,8 +721,6 @@ cv::Mat L(const cv::Mat &I)
 
 void correlation(Mat in, Mat &out, KERNEL ker, int type){
 	Mat inF;
-
-	//convertGRYToFLT(in, inF);
 
 	in.convertTo(inF, CV_32F, 1.0/255.0, 0.0);
 

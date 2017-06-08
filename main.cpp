@@ -305,7 +305,7 @@ void correla(int argc, char** argv){
 
   printf("Achando maximos locais...\n");
   vector<MAXLOCAL> u,v;
-
+  
   correlationInBatch(ent, v, ker, minCorr );
 
   printf("\n");
@@ -746,7 +746,7 @@ void msgranul_kmeans(int argc, char** argv) //It will find by granul correlation
 
 //<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<< main <<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<<
 const char about[]=
-"< MGranul.exe: Programas para granulometria multi-formas v1.2>\n"
+"< MGranul.exe: Programas para granulometria multi-formas v1.2.1>\n"
 "_______________________________________________________________________________\n";
 
 const char help[]=

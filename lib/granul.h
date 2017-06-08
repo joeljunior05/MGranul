@@ -85,7 +85,7 @@ typedef MMAPA::iterator IMMAPA;
 
 // AUX FUNCTIONS
 
-int evenToOdd(int val); // An even number became an odd one.
+int evenToOdd(double val); // An even number became an odd one.
 void normalizeFLT(Mat_<FLT> &matF, FLT target, FLT overall);
 void normalizeGRY(Mat_<GRY> &matG, GRY target, GRY overall);
 void lcFromKernel(int l, int c, int& li, int& ci, KERNEL k);
@@ -106,17 +106,17 @@ void printMAXLOCAL(MAXLOCAL m);
 
 // KERNEL FUNCTIONS
 
-void createKernelCircle(float diameter, vector<KERNEL>& output, int op=-1);
-void createKernelRectangle(float lengthL, float lengthC, float angle, vector<KERNEL>& output, int op=-1);
-void createKernelSquare(float length, float angle, vector<KERNEL>& output, int op=-1);
-void createKernelEllipse(float lengthL, float lengthC, float angle, vector<KERNEL>& output, int op=-1);
+void createKernelCircle(double diameter, vector<KERNEL>& output, int op=-1);
+void createKernelRectangle(double lengthL, double lengthC, double angle, vector<KERNEL>& output, int op=-1);
+void createKernelSquare(double length, double angle, vector<KERNEL>& output, int op=-1);
+void createKernelEllipse(double lengthL, double lengthC, double angle, vector<KERNEL>& output, int op=-1);
 void createKernelGeneric(Mat_<FLT> fltM, Mat_<GRY> gryM, vector<KERNEL>& output, double angle);
-void createKernels(vector<KERNEL> &output, char type, float lengthL, float lengthC, float escOitava = 5, float escMax = 1.0, float escMin=0.5, float angStep = 10);
+void createKernels(vector<KERNEL> &output, char type, double lengthL, double lengthC, double escOitava = 5, double escMax = 1.0, double escMin=0.5, double angStep = 10);
 
 // GRANULOMETRY FUNCTIONS
 
 void correlation(Mat in, Mat &out, KERNEL ker, int type=CV_TM_CCORR);
-void correlationInBatch(Mat& img, vector<MAXLOCAL> &out, vector<KERNEL> kers, float minCorr=0, int maxDist=2, int type=CV_TM_CCORR);
+void correlationInBatch(Mat& img, vector<MAXLOCAL> &out, vector<KERNEL> kers, float minCorr=0.001, int maxDist=2, int type=CV_TM_CCORR);
 void computeIntersection(Mat_<MAXLOCAL>& n_out, MAXLOCAL& loc, float maxInt=1);
 void sift(vector<MAXLOCAL> v, vector<MAXLOCAL>& w, float minCorr, float maxInter, Size size);
 void sift(vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double minCorrCir, double maxInterCir, double minCorrRet, double maxInterRet,
