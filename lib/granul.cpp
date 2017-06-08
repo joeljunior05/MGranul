@@ -411,7 +411,7 @@ void createKernelRectangle(double lengthL, double lengthC, double angle, vector<
 	KERNEL tempK 	= KERNEL();
 	int d1		= evenToOdd(sqrt(2.0)*lengthL)+BOUND_PIXELS; // TODO: Provide round function
 	int d2		= evenToOdd(sqrt(2.0)*lengthC)+BOUND_PIXELS; // TODO: Provide round function
-	cout << d1 << " " << d2;
+	
 	tempK.shape 	= 'r';
 	tempK.d1 		= lengthL;
 	tempK.d2 		= lengthC;
@@ -800,66 +800,76 @@ void correlationFFTInBatch(Mat& img, vector<MAXLOCAL> &out, vector<KERNEL> kers,
 void correlationInBatch(Mat& img, vector<MAXLOCAL> &out, vector<KERNEL> kers, float minCorr, int maxDist, int type){
 
 #pragma omp parallel shared(out)
-{
-	bool isMaxExtremal = false;
-	KERNEL tmp;
-	Mat_<FLT> corrMat;
+	{
+		bool isMaxExtremal = false;
+		KERNEL tmp;
+		Mat_<FLT> corrMat;
 
-	std::vector<MAXLOCAL> v;
+		std::vector<MAXLOCAL> v;
 
-	int tN = omp_get_thread_num();
-	int T  = omp_get_num_threads();
+		int tN = omp_get_thread_num();
+		int T = omp_get_num_threads();
 
-	uint work = (kers.size() / T);
+		uint work = (kers.size() / T);
 
-	uint end;
+		uint end;
 
-	if(tN == T-1){
-		end = kers.size();
-	}else{
-		end = work + work*tN;
-	}
+		if (tN == T - 1)
+		{
+			end = kers.size();
+		}
+		else
+		{
+			end = work + work * tN;
+		}
 
-	for(unsigned int i = work*tN; i < end; i++){
-		tmp = kers[i];
+		for (unsigned int i = work * tN; i < end; i++)
+		{
+			tmp = kers[i];
 
-		printf("Applying filter #%u-#%lu\r", i+1, kers.size());
-		fflush(stdout); 
+			printf("Applying filter #%u-#%lu\r", i + 1, kers.size());
+			fflush(stdout);
 
-		correlation(img, corrMat, tmp, type);
+			correlation(img, corrMat, tmp, type);
 
-		for (int l=1; l<corrMat.rows-1; l++){
-			for (int c=1; c<corrMat.cols-1; c++) {
+			for (int l = 1; l < corrMat.rows - 1; l++)
+			{
+				for (int c = 1; c < corrMat.cols - 1; c++)
+				{
 
-				FLT valor = corrMat.at<FLT>(l,c);
+					FLT valor = corrMat.at<FLT>(l, c);
 
-				if (valor>=minCorr) {
-					isMaxExtremal = true;
+					if (valor >= minCorr)
+					{
+						isMaxExtremal = true;
 
-					for (int l2=-1; l2<=1 && isMaxExtremal; l2++)
-						for (int c2=-1; c2<=1 && isMaxExtremal; c2++)
-							if (valor<corrMat(l+l2,c+c2)) {
-								isMaxExtremal = false;
-							}
+						for (int l2 = -1; l2 <= 1 && isMaxExtremal; l2++)
+							for (int c2 = -1; c2 <= 1 && isMaxExtremal; c2++)
+								if (valor < corrMat(l + l2, c + c2))
+								{
+									isMaxExtremal = false;
+								}
 
-							if(isMaxExtremal){
+						if (isMaxExtremal)
+						{
 
-								int li,ci;
-								li = l + (img.rows - corrMat.rows)/2;
-								ci = c + (img.cols - corrMat.cols)/2;
-								v.push_back(MAXLOCAL(valor, tmp.shape, li, ci, tmp.d1, tmp.d2, tmp.ang));
-							}
-
+							int li, ci;
+							li = l + (img.rows - corrMat.rows) / 2;
+							ci = c + (img.cols - corrMat.cols) / 2;
+							v.push_back(MAXLOCAL(valor, tmp.shape, li, ci, tmp.d1, tmp.d2, tmp.ang));
+						}
+					}
 				}
 			}
 		}
-	}
 
-	for(uint i = 0; i < v.size(); i++){
-		out.push_back(v[i]);
-	}
+		for (uint i = 0; i < v.size(); i++)
+		{
+			out.push_back(v[i]);
+		}
 }
-	removeCloser(out, out, maxDist);
+
+removeCloser(out, out, maxDist);
 }
 
 void computeIntersection(MATRIZ<MAXLOCAL>& n_out, MAXLOCAL &loc, float maxInt){
@@ -868,8 +878,8 @@ void computeIntersection(MATRIZ<MAXLOCAL>& n_out, MAXLOCAL &loc, float maxInt){
 	RotatedRect rRect = RotatedRect(Point2f(loc.ci, loc.li), Size2f(loc.d2, loc.d1), loc.ang);
 	Rect brect = rRect.boundingRect();
 
-	uint row_orig = brect.y;
-	uint col_orig = brect.x;
+	int row_orig = brect.y;
+	int col_orig = brect.x;
 
 	uint row_dest = row_orig + brect.height;
 	uint col_dest = col_orig + brect.width;
@@ -914,7 +924,7 @@ void computeIntersection(MATRIZ<MAXLOCAL>& n_out, MAXLOCAL &loc, float maxInt){
 					intersecArea = area;
 					loc.valid = false;
 				}
-
+				
 				intersecArea++;
 			}
 		}
@@ -929,7 +939,8 @@ void computeIntersection(MATRIZ<MAXLOCAL>& n_out, MAXLOCAL &loc, float maxInt){
 	if(intersecArea <= maxInt){
 		for(uint r = row_orig; r < row_dest; r++){
 			for(uint c = col_orig; c < col_dest; c++){
-				n_out(r, c) = loc;
+				if(isInsideKernel(r, c, loc))
+					n_out(r, c) = loc;
 			}
 		}
 	}
@@ -971,6 +982,8 @@ void sift(vector<MAXLOCAL> in, vector<MAXLOCAL>& out, float minCorr, float maxIn
 
 				aux.push_back(in[i]);
 			}
+
+			
 		}
 		else
 			i = in.size();
@@ -1042,15 +1055,13 @@ void sift(vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double minCorrCir, double 
 	out = aux;
 }
 
-Mat_<COR> mostrar_MSER;
-
 void putMAXLOCALOnMatrix(MATRIZ<vector<DBL>>& n_out, MAXLOCAL &loc, DBL value){
 
 	RotatedRect rRect = RotatedRect(Point2f(loc.ci, loc.li), Size2f(loc.d2, loc.d1), loc.ang);
 	Rect brect = rRect.boundingRect();
 
-	uint row_orig = brect.y;
-	uint col_orig = brect.x;
+	int row_orig = brect.y;
+	int col_orig = brect.x;
 
 	uint row_dest = row_orig + brect.height;
 	uint col_dest = col_orig + brect.width;
@@ -1073,8 +1084,6 @@ void putMAXLOCALOnMatrix(MATRIZ<vector<DBL>>& n_out, MAXLOCAL &loc, DBL value){
 			loc.area++;
 
 			n_out(r, c).push_back(value);
-
-			mostrar_MSER.at<COR>(r ,c) = COR(255,0,0);
 		}
 	}
 
@@ -1091,8 +1100,6 @@ void siftMSER(Mat img, vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double minCor
 	MATRIZ<vector<DBL>> mAux_G(img.rows, img.cols); //Aux matrix to Granulometry
 
 	DBL minLocArea, maxLocArea;
-
-	mostrar_MSER = img.clone();
 
 	minLocArea = std::numeric_limits<double>::infinity();
 	maxLocArea = 0;

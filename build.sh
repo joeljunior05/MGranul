@@ -21,7 +21,7 @@ else
     rm -r $FOLDER_NAME
     mkdir $FOLDER_NAME
     cd $FOLDER_NAME
-    cmake ..
+    cmake .. -DWITH_OMP=OFF
     make
     mv mgranul ../mgranul
   else

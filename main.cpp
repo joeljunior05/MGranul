@@ -489,7 +489,7 @@ void relat(int argc, char** argv){
   fclose(arq);
 }
 
-void msgranul(int argc, char** argv) //It will find by granul correlations from MSER structs
+void msgranul(int argc, char** argv) //It will find for granul correlations from MSER structs
 {
   if (argc<4) {
     printf("Msgranul imagem.pgm imagem.ho1 saida.ppm|saida.ho2 parametros\n");
@@ -591,12 +591,12 @@ void msgranul(int argc, char** argv) //It will find by granul correlations from 
   printf("Filtrando os maximos locais com interseccao>maxInter...\n");
   vector<MAXLOCAL> w;
   sift(v, w, minCorrCir,maxInterCir,minCorrRet,maxInterRet,minCorrQua,maxInterQua,minCorrEli,maxInterEli, ent.size());
-  printf("Numero de maximos locais originais=%lu\n",w.size());
+  printf("Numero de maximos locais apos filtro interseccao=%lu\n",w.size());
   printf("Filtrando os maximos locais com MSER...\n");
   v = w;
   w.clear();
   siftMSER(entC, v, w, minCorrMSER);
-  printf("Numero de maximos locais apos filtro interseccao=%lu\n",w.size());
+  printf("Numero de maximos locais apos filtro MSER=%lu\n",w.size());
 
   if (getSuffix(argv[3])=="ho2") {
     printTextMAXLOCAL(w, argv[3]);
@@ -608,7 +608,7 @@ void msgranul(int argc, char** argv) //It will find by granul correlations from 
   }
 }
 
-void msgranul_kmeans(int argc, char** argv) //It will find by granul correlations from MSER structs
+void msgranul_kmeans(int argc, char** argv) //It will find for granul correlations from MSER structs
 {
   if (argc<4) {
     printf("Msgranul_kmeans imagem.pgm imagem.ho1 saida.ppm|saida.ho2 parametros\n");
@@ -721,18 +721,18 @@ void msgranul_kmeans(int argc, char** argv) //It will find by granul correlation
   printf("Filtrando os maximos locais com interseccao>maxInter...\n");
   vector<MAXLOCAL> w;
   sift(v, w, minCorrCir,maxInterCir,minCorrRet,maxInterRet,minCorrQua,maxInterQua,minCorrEli,maxInterEli, ent.size());
-  printf("Numero de maximos locais originais=%lu\n",w.size());
+  printf("Numero de maximos locais apos filtro interseccao=%lu\n",w.size());
   printf("Filtrando os maximos locais com MSER...\n");
   v = w;
   w.clear();
   siftMSER(entC, v, w, minCorrMSER);
-  printf("Numero de maximos locais apos filtro interseccao=%lu\n",w.size());
+  printf("Numero de maximos locais apos filtro MSER=%lu\n",w.size());
 
   printf("Filtrando os maximos locais com Kmeans...\n");
   v = w;
   w.clear();
   chooseKmeans(entC, v, w, num_k);
-  printf("Numero de maximos locais apos filtro interseccao=%lu\n",w.size());
+  printf("Numero de maximos locais apos filtro kmeans=%lu\n",w.size());
 
   if (getSuffix(argv[3])=="ho2") {
     printTextMAXLOCAL(w, argv[3]);
