@@ -1,0 +1,8 @@
+# ignore release files,
+release/*
+
+# ignore compiled mgranul 
+mgranul
+
+# ignore vscode files
+*.vscode
