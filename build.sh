@@ -10,7 +10,6 @@ if [ ! -d "$FOLDER_NAME" ]; then
   cd $FOLDER_NAME
   cmake ..
   make
-  mv mgranul ../mgranul
 
 else
   unset get_op
@@ -23,7 +22,6 @@ else
     cd $FOLDER_NAME
     cmake .. -DWITH_OMP=OFF
     make
-    mv mgranul ../mgranul
   else
     echo "$FOLDER_NAME not erased."
   fi
