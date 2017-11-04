@@ -9,7 +9,7 @@ set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -lpng -lz -ltiff -ljasper -ljpeg -lgtk-x
 #OpenMP
 
 if(NOT DEFINED WITH_OMP)
-	set(WITH_OMP ON)
+	set(WITH_OMP OFF)
 endif(NOT DEFINED WITH_OMP)
 
 find_package(OpenMP)
