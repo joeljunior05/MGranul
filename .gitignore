@@ -7,5 +7,10 @@ mgranul
 # ignore vscode files
 *.vscode
 
-# ignore node_modules
+# ignore webapp files
 app/node_modules
+
+#ignore java files
+java/.idea
+java/target
+java/msgranul_server.iml
