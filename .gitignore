@@ -1,5 +1,5 @@
 # ignore release files,
-release/*
+cpp/release/*
 
 # ignore compiled mgranul 
 mgranul
@@ -8,7 +8,7 @@ mgranul
 *.vscode
 
 # ignore webapp files
-app/node_modules
+webapp/node_modules
 
 #ignore java files
 java/.idea
