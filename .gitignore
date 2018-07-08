@@ -14,3 +14,6 @@ webapp/node_modules
 java/.idea
 java/target
 java/msgranul_server.iml
+
+#ignore MacOs files
+.DS_Store
