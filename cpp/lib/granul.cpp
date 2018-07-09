@@ -127,6 +127,7 @@ void convertFLTToGRY(Mat in, Mat& out){
 void sortMAXLOCAL(vector<MAXLOCAL>& a, int l, int r)
 {
 	assert(l<=r);
+
 	int i=l; 
 	int j=r;
 	MAXLOCAL x=a[(l+r)/2];
@@ -205,6 +206,10 @@ bool isMAXEqual(MAXLOCAL m, MAXLOCAL n){
 void removeCloser(vector<MAXLOCAL>& v, vector<MAXLOCAL>& u, int maxDist){ 
 
 	MMAPA m;
+
+	if(v.size() <= 0){
+		return;
+	}
 
 	sortMAXLOCAL(v,0,v.size()-1);
 

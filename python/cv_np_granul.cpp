@@ -302,3 +302,92 @@ PyObject* convertKernelsToPyList(vector<KERNEL> kernels){
 
     return retList;
 }
+
+vector<KERNEL> convertPyListToKernels(PyObject* list){
+    vector<KERNEL> retvector = vector<KERNEL>(PyList_Size(list));
+
+    for (int idx = 0; idx < retvector.size(); ++idx){
+        PyKernelObject *item = (PyKernelObject *) PyList_GetItem(list, idx);
+
+        retvector[idx] = KERNEL();
+        kernelfromPyKernelObject(&retvector[idx], *item);
+    }
+
+    return retvector;
+}
+
+#define PyMaxLocalObject(X) ((PyMaxLocalObject*) X)
+
+PyObject* convertMaxLocalsToPyList(vector<MAXLOCAL> maxlocals){
+    PyObject* retList = PyList_New(maxlocals.size());
+    int list_index = 0;
+
+    for (std::vector<MAXLOCAL>::iterator it = maxlocals.begin(); it != maxlocals.end(); ++it){
+        PyMaxLocalObject *item = PyMaxLocalObject((PyMaxLocalType).tp_alloc(&PyMaxLocalType, 0));
+
+        pyMaxLocalObjectFromMAXLOCAL(item, *it);
+
+        if(PyList_SetItem(retList, list_index, (PyObject*) item) < 0)
+            return NULL;
+        ++list_index;
+    }
+
+    return retList;
+}
+
+void sortPyMAXLOCALList(PyListObject* list, int l, int r){
+	int i=l; 
+	int j=r;
+	PyMaxLocalObject* x= PyMaxLocalObject(list->ob_item[(l+r)/2]);
+
+	do {
+		while (PyMaxLocalObject(list->ob_item[i])->correlation > x->correlation) i++;
+		while (x->correlation  >  PyMaxLocalObject(list->ob_item[j])->correlation) j--;
+
+		if (i<=j) {
+			swap(list->ob_item[i],list->ob_item[j]); i++; j--;
+		}
+	} while (i<=j);
+
+	if (l<j) sortPyMAXLOCALList(list,l,j);
+	if (i<r) sortPyMAXLOCALList(list,i,r);
+}
+
+PyObject* sortPyMAXLOCAL(PyObject* list)
+{
+
+    if( !PyList_Check(list) )
+    {
+        failmsg("list: Object is not a Python list");
+        return NULL;
+    }
+
+    int low = 0, high = PyList_Size(list) - 1;
+
+    PyObject* retList = PyList_GetSlice(list, low, high);
+
+    sortPyMAXLOCALList((PyListObject*) retList, low, high);
+
+    return retList;
+}
+
+PyObject* correlate(PyObject* img, PyObject* kers, float minCorr, int maxDist, int type){
+
+    if( !PyList_Check(kers) )
+    {
+        failmsg("list: Object is not a Python list");
+        return NULL;
+    }
+
+    vector<KERNEL> kernels = convertPyListToKernels(kers);
+    vector<MAXLOCAL> output, ret_locals;
+    cv::Mat in = PyObjectTocvMat(img);
+
+    correlationInBatch(in, output, kernels, minCorr, type);
+
+    printf("%lu\n", output.size());
+    
+    removeCloser(output, ret_locals, maxDist);
+
+    return convertMaxLocalsToPyList(ret_locals);
+}
