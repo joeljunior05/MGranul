@@ -15,5 +15,10 @@ java/.idea
 java/target
 java/msgranul_server.iml
 
+#ignore Python files
+python/build
+python/*.so
+python/*.o
+
 #ignore MacOs files
 .DS_Store
