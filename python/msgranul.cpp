@@ -106,6 +106,16 @@ static PyObject *msgranul_extract(PyObject *self, PyObject *args){
     return extract_locals(img, maxLocalList);
 }
 
+static PyObject *msgranul_printmaxlocals(PyObject *self, PyObject *args){
+    PyObject* img;
+    PyObject* maxLocalList;
+
+    if (!PyArg_ParseTuple(args, "OO", &img, &maxLocalList)) //If no arg is provided it returns with error
+        return NULL;
+
+    return print_locals(img, maxLocalList);
+}
+
 static PyMethodDef MSGranulMethods[] = {
     {"createkernels",   msgranul_createkernels, METH_VARARGS, "Create a list of kernels."},
     {"sortlocal",       msgranul_sortlocal, METH_VARARGS, "Sort a list of locals by correlation value."},
@@ -114,6 +124,7 @@ static PyMethodDef MSGranulMethods[] = {
     {"apply",           msgranul_apply, METH_VARARGS, "Apply Granulometry based on correlation using kernels."},
     {"applyMSER",       msgranul_applyMSER, METH_VARARGS, "Apply MSGranul using kernels."},
     {"extract",         msgranul_extract, METH_VARARGS, "Extract a piece of image where MaxLocal is located."},
+    {"printmaxlocals",  msgranul_printmaxlocals, METH_VARARGS, "Prints MaxLocals on the image."},
 
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
