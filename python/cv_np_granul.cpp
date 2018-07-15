@@ -522,3 +522,22 @@ PyObject* extract_locals(PyObject* img, PyObject* maxLocalList){
 
     return retList;
 } 
+
+PyObject* print_locals(PyObject* img, PyObject* maxLocalList){
+
+    if( !PyList_Check(maxLocalList) )
+    {
+        failmsg("list: Object is not a Python list");
+        return NULL;
+    }
+
+    vector<Mat> ret = vector<Mat>();
+
+    vector<MAXLOCAL> maxlocals = convertPyListToMaxLocals(maxLocalList);
+
+    cv::Mat input_img = PyObjectTocvMat(img).clone();
+
+    printMAXLOCAL(maxlocals, input_img);
+
+    return cvMatToPyObject(input_img);
+} 
