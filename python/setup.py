@@ -14,7 +14,7 @@ msgranul = Extension('msgranul',
                                     'opencv_highgui'],
                     library_dirs= ['/usr/local/lib'],
                     extra_compile_args  = ['-std=c++11', '-fno-stack-protector'],
-                    extra_objects       = ['../cpp/release/liblib_granul.a'],
+                    extra_objects       = ['../cpp/release/libgranul.a'],
                     sources             = ['msgranul.cpp']
                     )
 

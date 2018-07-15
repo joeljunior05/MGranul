@@ -21,7 +21,7 @@ if (WITH_OMP AND OPENMP_FOUND)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-add_library( lib_granul
+add_library( granul
 
              STATIC
 
@@ -31,4 +31,4 @@ add_library( lib_granul
 
 add_executable(mgranul main.cpp)
 
-target_link_libraries( mgranul ${OpenCV_LIBS} lib_granul)
+target_link_libraries( mgranul ${OpenCV_LIBS} granul)
