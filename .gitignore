@@ -14,3 +14,12 @@ webapp/node_modules
 java/.idea
 java/target
 java/msgranul_server.iml
+
+#ignore Python files
+python/build
+python/*.so
+python/*.o
+python/module
+
+#ignore MacOs files
+.DS_Store

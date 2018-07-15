@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 2.8)
+
 project( mgranul )
-add_definitions("-std=c++11")
+add_definitions("-std=c++11 -fPIC")
 find_package( OpenCV REQUIRED )
 include_directories(${OpenCV_INCLUDE_DIRS})
 
@@ -20,7 +21,7 @@ if (WITH_OMP AND OPENMP_FOUND)
 	set(CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} ${OpenMP_EXE_LINKER_FLAGS}")
 endif()
 
-add_library( lib_granul
+add_library( granul
 
              STATIC
 
@@ -30,4 +31,4 @@ add_library( lib_granul
 
 add_executable(mgranul main.cpp)
 
-target_link_libraries( mgranul ${OpenCV_LIBS} lib_granul)
+target_link_libraries( mgranul ${OpenCV_LIBS} granul)
