@@ -19,6 +19,7 @@ java/msgranul_server.iml
 python/build
 python/*.so
 python/*.o
+python/module
 
 #ignore MacOs files
 .DS_Store

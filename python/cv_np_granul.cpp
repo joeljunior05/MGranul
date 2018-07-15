@@ -335,6 +335,20 @@ PyObject* convertMaxLocalsToPyList(vector<MAXLOCAL> maxlocals){
     return retList;
 }
 
+vector<MAXLOCAL> convertPyListToMaxLocals(PyObject* list){
+
+    vector<MAXLOCAL> retvector = vector<MAXLOCAL>(PyList_Size(list));
+    
+    for (int idx = 0; idx < retvector.size(); ++idx){
+        PyMaxLocalObject* item = (PyMaxLocalObject *) PyList_GetItem(list, idx);
+
+        retvector[idx] = MAXLOCAL();
+        MAXLOCALFromPyMaxLocalObject(&retvector[idx], *item);
+    }
+
+    return retvector;
+}
+
 void sortPyMAXLOCALList(PyListObject* list, int l, int r){
 	int i=l; 
 	int j=r;
@@ -383,11 +397,128 @@ PyObject* correlate(PyObject* img, PyObject* kers, float minCorr, int maxDist, i
     vector<MAXLOCAL> output, ret_locals;
     cv::Mat in = PyObjectTocvMat(img);
 
-    correlationInBatch(in, output, kernels, minCorr, type);
+    if (in.channels() == 3) {
+        cv::cvtColor(in, in, CV_RGB2GRAY);  
+    } else if (in.channels() == 4) {
+        cv::cvtColor(in, in, CV_RGBA2GRAY);  
+    }
 
-    printf("%lu\n", output.size());
+    correlationInBatch(in, output, kernels, minCorr, type);
     
     removeCloser(output, ret_locals, maxDist);
 
     return convertMaxLocalsToPyList(ret_locals);
 }
+
+PyObject* remove_maxlocal_closer(PyObject* maxLocalList, int maxDist){
+
+    if( !PyList_Check(maxLocalList) )
+    {
+        failmsg("list: Object is not a Python list");
+        return NULL;
+    }
+
+    vector<MAXLOCAL> ret = vector<MAXLOCAL>();
+
+    vector<MAXLOCAL> maxlocals = convertPyListToMaxLocals(maxLocalList);
+
+    removeCloser(maxlocals, ret, maxDist);
+
+    return convertMaxLocalsToPyList(ret);
+}
+
+PyObject* apply_granul(PyObject* img, PyObject* maxLocalList, double minCorrDef, double maxInterDef){
+
+    if( !PyList_Check(maxLocalList) )
+    {
+        failmsg("list: Object is not a Python list");
+        return NULL;
+    }
+
+    vector<MAXLOCAL> ret = vector<MAXLOCAL>();
+
+    vector<MAXLOCAL> maxlocals = convertPyListToMaxLocals(maxLocalList);
+
+    cv::Mat input_img = PyObjectTocvMat(img);
+
+    double minCorrCir, minCorrRet, minCorrQua, minCorrEli;
+    minCorrCir = minCorrRet = minCorrQua = minCorrEli = minCorrDef;
+
+    double maxInterCir, maxInterRet, maxInterQua, maxInterEli;
+    maxInterCir = maxInterRet = maxInterQua = maxInterEli = maxInterDef;
+
+    sift(maxlocals, ret, minCorrCir, maxInterCir, minCorrRet, maxInterRet, minCorrQua, maxInterQua, minCorrEli, maxInterEli, input_img.size());
+
+    Mat output_img = input_img.clone();
+
+    printMAXLOCAL(ret, output_img);
+
+    PyObject* retList = PyList_New(2);
+
+    if(PyList_SetItem(retList, 0, convertMaxLocalsToPyList(ret)) < 0)
+            return NULL;
+
+    if(PyList_SetItem(retList, 1, cvMatToPyObject( output_img)) < 0)
+            return NULL;
+
+    return retList;
+}
+
+PyObject* apply_msgranul(PyObject* img, PyObject* maxLocalList, double minCorrMSER){
+
+    if( !PyList_Check(maxLocalList) )
+    {
+        failmsg("list: Object is not a Python list");
+        return NULL;
+    }
+
+    vector<MAXLOCAL> ret = vector<MAXLOCAL>();
+
+    vector<MAXLOCAL> maxlocals = convertPyListToMaxLocals(maxLocalList);
+
+    cv::Mat input_img = PyObjectTocvMat(img);
+
+    siftMSER(input_img, maxlocals, ret, minCorrMSER);
+
+    Mat output_img = input_img.clone();
+
+    printMAXLOCAL(ret, output_img);
+
+    PyObject* retList = PyList_New(2);
+
+    if(PyList_SetItem(retList, 0, convertMaxLocalsToPyList(ret)) < 0)
+            return NULL;
+
+    if(PyList_SetItem(retList, 1, cvMatToPyObject( output_img)) < 0)
+            return NULL;
+
+    return retList;
+}
+
+PyObject* extract_locals(PyObject* img, PyObject* maxLocalList){
+
+    if( !PyList_Check(maxLocalList) )
+    {
+        failmsg("list: Object is not a Python list");
+        return NULL;
+    }
+
+    vector<Mat> ret = vector<Mat>();
+
+    vector<MAXLOCAL> maxlocals = convertPyListToMaxLocals(maxLocalList);
+
+    cv::Mat input_img = PyObjectTocvMat(img);
+
+    extractLocals(input_img, maxlocals, ret);
+
+    PyObject* retList = PyList_New(ret.size());
+
+    
+    for(size_t idx = 0; idx < ret.size(); idx++)
+    {
+        if(PyList_SetItem(retList, idx, cvMatToPyObject(ret[idx])) < 0)
+            return NULL;
+    }
+
+    return retList;
+} 

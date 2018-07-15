@@ -1347,3 +1347,19 @@ void chooseKmeans(Mat img, vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double nu
 	}
 
 }
+
+
+void extractLocals(Mat img, vector<MAXLOCAL> in, vector<Mat>& out){
+	
+	for(size_t i = 0; i < in.size(); i++)
+	{
+		Mat mat_item;
+		int max_side = max(in[i].d1, in[i].d2);
+		int BORDER_VALUE = ceil(sqrt(2.0)*max_side/2);
+		mat_item = img(Rect(in[i].ci - BORDER_VALUE, in[i].li - BORDER_VALUE, 
+								2*BORDER_VALUE, 2*BORDER_VALUE)).clone();
+
+		out.push_back(mat_item);
+	}
+	
+}

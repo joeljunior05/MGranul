@@ -17,8 +17,6 @@ static PyObject *msgranul_createkernels(PyObject *self, PyObject *args){
 
     vector<KERNEL> kers;
 
-    printf("%ld\n", (size_t)&(((PyObject*)0)->ob_refcnt));
-
     createKernels(kers, shape, len_rows, len_cols, octave, max, min, steps);
 
     return convertKernelsToPyList(kers);
@@ -30,7 +28,7 @@ static PyObject *msgranul_createkernels(PyObject *self, PyObject *args){
 static PyObject *msgranul_sortlocal(PyObject *self, PyObject *args){
     PyObject* maxLocalList;
 
-    if (!PyArg_ParseTuple(args, "O", &maxLocalList)) //If no arg is provided it return with error
+    if (!PyArg_ParseTuple(args, "O", &maxLocalList)) //If no arg is provided it returns with error
         return NULL;
 
     return sortPyMAXLOCAL(maxLocalList);
@@ -42,10 +40,10 @@ static PyObject *msgranul_sortlocal(PyObject *self, PyObject *args){
 static PyObject *msgranul_correlate(PyObject *self, PyObject *args){
     PyObject* img;
     PyObject* kers;
-    float minCorr=0.00000001;
+    float minCorr=0.0001;
     int maxDist=2, type = CV_TM_CCORR;
 
-    if (!PyArg_ParseTuple(args, "OO|fii", &img, &kers, &minCorr, &maxDist, &type)) //If no arg is provided it return with error
+    if (!PyArg_ParseTuple(args, "OO|fii", &img, &kers, &minCorr, &maxDist, &type)) //If no arg is provided it returns with error
         return NULL;
 
     return correlate(img, kers, minCorr, maxDist, type);
@@ -58,34 +56,54 @@ static PyObject *msgranul_removecloser(PyObject *self, PyObject *args){
     PyObject* maxLocalList;
     int maxDist;
 
-    if (!PyArg_ParseTuple(args, "Oi", &maxLocalList, &maxDist)) //If no arg is provided it return with error
+    if (!PyArg_ParseTuple(args, "Oi", &maxLocalList, &maxDist)) //If no arg is provided it returns with error
         return NULL;
 
-    Py_RETURN_NONE;
+    return remove_maxlocal_closer(maxLocalList, maxDist);
 }
 
 /*
     This function will be called from Python to apply granulometry based on correlation [msgranul.apply]
 */
-static PyObject *msgranul_apply(PyObject *self, PyObject *args){    
-    const char *command;
+static PyObject *msgranul_apply(PyObject *self, PyObject *args){
 
-    if (!PyArg_ParseTuple(args, "s", &command)) //If no arg is provided it return with error
+    PyObject* img;
+    PyObject* maxLocalList;
+
+    double minCorrDef=0.1;
+
+    double maxInterDef=0.3;
+
+    if (!PyArg_ParseTuple(args, "OO|dd", &img, &maxLocalList, &minCorrDef, &maxInterDef)) //If no arg is provided it returns with error
         return NULL;
 
-    Py_RETURN_NONE;
+
+    return apply_granul(img, maxLocalList, minCorrDef, maxInterDef);
 }
 
 /*
     This function will be called from Python to apply MSGranul [msgranul.applyMSER]
 */
 static PyObject *msgranul_applyMSER(PyObject *self, PyObject *args){
-    const char *command;
+    PyObject* img;
+    PyObject* maxLocalList;
 
-    if (!PyArg_ParseTuple(args, "s", &command)) //If no arg is provided it return with error
+    double minCorrMSER = 0.9;
+
+    if (!PyArg_ParseTuple(args, "OO|d", &img, &maxLocalList, &minCorrMSER)) //If no arg is provided it returns with error
         return NULL;
 
-    Py_RETURN_NONE;
+    return apply_msgranul(img, maxLocalList, minCorrMSER);
+}
+
+static PyObject *msgranul_extract(PyObject *self, PyObject *args){
+    PyObject* img;
+    PyObject* maxLocalList;
+
+    if (!PyArg_ParseTuple(args, "OO", &img, &maxLocalList)) //If no arg is provided it returns with error
+        return NULL;
+
+    return extract_locals(img, maxLocalList);
 }
 
 static PyMethodDef MSGranulMethods[] = {
@@ -95,7 +113,8 @@ static PyMethodDef MSGranulMethods[] = {
     {"removecloser",    msgranul_removecloser, METH_VARARGS, "Remove from list the maxlocals closer."},
     {"apply",           msgranul_apply, METH_VARARGS, "Apply Granulometry based on correlation using kernels."},
     {"applyMSER",       msgranul_applyMSER, METH_VARARGS, "Apply MSGranul using kernels."},
-    
+    {"extract",         msgranul_extract, METH_VARARGS, "Extract a piece of image where MaxLocal is located."},
+
     {NULL, NULL, 0, NULL}        /* Sentinel */
 };
 

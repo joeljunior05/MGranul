@@ -3,6 +3,8 @@
 
 /************ Types definition ************/
 
+#define safe_cvt(string_constant) ((char*) string_constant)
+
 /* Begin - MaxLocal definition */
 
 typedef struct PyMaxLocalObject{ // Object represent the object itself.
@@ -17,32 +19,32 @@ typedef struct PyMaxLocalObject{ // Object represent the object itself.
 } PyMaxLocalObject;
 
 static PyMemberDef maxlocal_members[] = {
-    {"correlation", T_FLOAT, offsetof(PyMaxLocalObject, correlation), 0,
-     "correlation value"},
-    {"shape", T_CHAR, offsetof(PyMaxLocalObject, shape), 0,
-     "kind of shape"},
-    {"x", T_INT, offsetof(PyMaxLocalObject, x), 0,
-     "center -> x"},
-    {"y", T_INT, offsetof(PyMaxLocalObject, y), 0,
-     "center -> y"},
-    {"w", T_INT, offsetof(PyMaxLocalObject, w), 0,
-     "width"},
-    {"h", T_INT, offsetof(PyMaxLocalObject, h), 0,
-     "heigh"},
-    {"ang", T_INT, offsetof(PyMaxLocalObject, ang), 0,
-     "angle in degree"},
+    {safe_cvt("correlation"), T_FLOAT, offsetof(PyMaxLocalObject, correlation), 0,
+     safe_cvt("correlation value")},
+    {safe_cvt("shape"), T_CHAR, offsetof(PyMaxLocalObject, shape), 0,
+     safe_cvt("kind of shape")},
+    {safe_cvt("x"), T_INT, offsetof(PyMaxLocalObject, x), 0,
+     safe_cvt("center -> x")},
+    {safe_cvt("y"), T_INT, offsetof(PyMaxLocalObject, y), 0,
+     safe_cvt("center -> y")},
+    {safe_cvt("w"), T_INT, offsetof(PyMaxLocalObject, w), 0,
+     safe_cvt("width")},
+    {safe_cvt("h"), T_INT, offsetof(PyMaxLocalObject, h), 0,
+     safe_cvt("heigh")},
+    {safe_cvt("ang"), T_INT, offsetof(PyMaxLocalObject, ang), 0,
+     safe_cvt("angle in degree")},
     {NULL}  /* Sentinel */
 };
 
 static PyTypeObject PyMaxLocalType = { // Specify how an object will behave.
     PyVarObject_HEAD_INIT(NULL, 0)
     .tp_name    = "msgranul.maxlocal",
-    .tp_doc     = "MaxLocal objects",
     .tp_basicsize = sizeof(PyMaxLocalObject),
     .tp_itemsize = 0,
     .tp_flags   = Py_TPFLAGS_DEFAULT,
-    .tp_new     = PyType_GenericNew,
-    .tp_members = maxlocal_members
+    .tp_doc     = "MaxLocal objects",
+    .tp_members = maxlocal_members,
+    .tp_new     = PyType_GenericNew
 };
 
 /* End - MaxLocal definition */
@@ -60,18 +62,18 @@ typedef struct PyKernelObject{
 } PyKernelObject;
 
 static PyMemberDef kernel_members[] = {
-    {"imgry", T_OBJECT_EX, offsetof(PyKernelObject, imgry), 0,
-     "grayscale image"},
-    {"imfloat", T_OBJECT_EX, offsetof(PyKernelObject, imfloat), 0,
-     "float image"},
-    {"shape", T_CHAR, offsetof(PyKernelObject, shape), 0,
-     "kind of shape"},
-    {"w", T_INT, offsetof(PyKernelObject, w), 0,
-     "width"},
-    {"h", T_INT, offsetof(PyKernelObject, h), 0,
-     "heigh"},
-    {"ang", T_INT, offsetof(PyKernelObject, ang), 0,
-     "angle in degree"},
+    {safe_cvt("imgry"), T_OBJECT_EX, offsetof(PyKernelObject, imgry), 0,
+     safe_cvt("grayscale image")},
+    {safe_cvt("imfloat"), T_OBJECT_EX, offsetof(PyKernelObject, imfloat), 0,
+     safe_cvt("float image")},
+    {safe_cvt("shape"), T_CHAR, offsetof(PyKernelObject, shape), 0,
+     safe_cvt("kind of shape")},
+    {safe_cvt("w"), T_INT, offsetof(PyKernelObject, w), 0,
+     safe_cvt("width")},
+    {safe_cvt("h"), T_INT, offsetof(PyKernelObject, h), 0,
+     safe_cvt("heigh")},
+    {safe_cvt("ang"), T_INT, offsetof(PyKernelObject, ang), 0,
+     safe_cvt("angle in degree")},
     {NULL}  /* Sentinel */
 };
 

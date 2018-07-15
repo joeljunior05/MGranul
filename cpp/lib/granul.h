@@ -123,3 +123,4 @@ void sift(vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double minCorrCir, double 
               double minCorrQua, double maxInterQua, double minCorrEli, double maxInterEli, Size size);
 void siftMSER(Mat img, vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double minCorrMSER);
 void chooseKmeans(Mat img, vector<MAXLOCAL> in, vector<MAXLOCAL>& out, double num_k);
+void extractLocals(Mat img, vector<MAXLOCAL> in, vector<Mat>& out);
