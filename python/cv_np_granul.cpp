@@ -403,7 +403,8 @@ PyObject* correlate(PyObject* img, PyObject* kers, float minCorr, int maxDist, i
         cv::cvtColor(in, in, CV_RGBA2GRAY);  
     }
 
-    correlationInBatch(in, output, kernels, minCorr, type);
+
+    correlationInBatch(in, output, kernels, minCorr, maxDist, type);
     
     removeCloser(output, ret_locals, maxDist);
 
