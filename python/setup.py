@@ -4,13 +4,15 @@ import os
 
 from numpy.distutils.misc_util import get_numpy_include_dirs
 
-granul_includes = ['../cpp/lib', '../cpp/local/include']
+COMPILER = "clang"
 
-os.environ["CC"] = "clang"
-os.environ["CXX"] = "clang"
+os.environ["CC"] = COMPILER
+os.environ["CXX"] = COMPILER
+
+include = get_numpy_include_dirs() + ['../cpp/lib', '../cpp/local/include']
 
 msgranul = Extension('msgranul',
-                    include_dirs    = granul_includes + get_numpy_include_dirs(),
+                    include_dirs    = include,
                     libraries = ['opencv_core',
                                     'opencv_imgproc',
                                     'opencv_features2d',
@@ -28,7 +30,7 @@ class build_ext_subclass( build_ext ):
         #print "compiler attr", self.compiler.__dict__
         #print "compiler", self.compiler.compiler
         #print "compiler is",c
-        self.compiler.compiler(["clang"])
+        self.compiler.compiler([COMPILER])
         build_ext.build_extensions(self)
 
 
