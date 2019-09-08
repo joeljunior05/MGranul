@@ -5,7 +5,9 @@ add_definitions("-std=c++11 -fPIC")
 find_package( OpenCV REQUIRED )
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -lpng -lz -ltiff -ljasper -ljpeg -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lcairo -lpango-1.0 -lfontconfig -lgobject-2.0 -lfreetype -lgthread-2.0 -lglib-2.0 -ldc1394 -lavcodec -lavformat -lavutil -lswscale -ldl -lm -lpthread -lrt")
+#set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3 -lpng -lz -ltiff -ljasper -ljpeg -lgtk-x11-2.0 -lgdk-x11-2.0 -latk-1.0 -lgio-2.0 -lpangoft2-1.0 -lpangocairo-1.0 -lgdk_pixbuf-2.0 -lcairo -lpango-1.0 -lfontconfig -lgobject-2.0 -lfreetype -lgthread-2.0 -lglib-2.0 -ldc1394 -lavcodec -lavformat -lavutil -lswscale -ldl -lm -lpthread -lrt")
+
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -O3")
 
 #OpenMP
 
@@ -29,6 +31,6 @@ add_library( granul
              lib/granul.h
              lib/meikon.h)
 
-add_executable(mgranul main.cpp)
+add_executable(exe_granul main.cpp)
 
-target_link_libraries( mgranul ${OpenCV_LIBS} granul)
+target_link_libraries(exe_granul ${OpenCV_LIBS} granul)

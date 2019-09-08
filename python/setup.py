@@ -2,19 +2,23 @@ from distutils.core import setup, Extension
 from distutils.command.build_ext import build_ext
 import os
 
+from numpy.distutils.misc_util import get_numpy_include_dirs
+
+granul_includes = ['../cpp/lib', '../cpp/local/include']
+
 os.environ["CC"] = "clang"
 os.environ["CXX"] = "clang"
 
 msgranul = Extension('msgranul',
-                    include_dirs    = ['../cpp/lib'],
+                    include_dirs    = granul_includes + get_numpy_include_dirs(),
                     libraries = ['opencv_core',
                                     'opencv_imgproc',
                                     'opencv_features2d',
-                                    'opencv_stitching',
+                                    'opencv_flann',
                                     'opencv_highgui'],
-                    library_dirs= ['/usr/local/lib'],
+                    library_dirs= ['../cpp/local/lib'],
                     extra_compile_args  = ['-std=c++11', '-fno-stack-protector'],
-                    extra_objects       = ['../cpp/release/libgranul.a'],
+                    extra_objects       = ['../cpp/local/lib/libgranul.a'],
                     sources             = ['msgranul.cpp']
                     )
 

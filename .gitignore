@@ -1,5 +1,7 @@
 # ignore release files,
 cpp/release/*
+cpp/bin/*
+cpp/local/*
 
 # ignore compiled mgranul 
 mgranul
