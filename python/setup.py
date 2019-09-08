@@ -4,7 +4,7 @@ import os
 
 from numpy.distutils.misc_util import get_numpy_include_dirs
 
-COMPILER = "clang"
+COMPILER = "g++"
 
 os.environ["CC"] = COMPILER
 os.environ["CXX"] = COMPILER
