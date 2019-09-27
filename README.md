@@ -7,6 +7,8 @@ To build fully MGranul are required these dependencies:
  - cmake;
  - make;
  - g++;
+ - Python3.6;
+ - python3-dev;
 ```
 
 Please, check online on how to get all these dependencies installed.
@@ -31,7 +33,7 @@ $ cd cpp/
 $ ./build.sh
 ```
 
-It will compile and will create a `bin/mgranul` file. This file is a shell script that maps the local OpenCV2 depency and the `exe_granul`, the actual executable. To run msgranul:
+It will compile and will create a `bin/mgranul` file. This file is a shell script that maps the local OpenCV2 dependency and the `exe_granul`, the actual executable. To run msgranul:
 
 ```
 $ bin/mgranul
@@ -48,6 +50,18 @@ Programas:
   Msgranul_kmeans - Filtra maximos locais (.ho1) e mostra
 ...............................................................................
 ```
+
+## Building Python bind
+
+In order to build Python bind, we must have to have MGranul built in the `cpp` and other dependencies. To install all dependencies just run:
+
+```
+$ pip3 install numpy
+$ cd python/
+$ ./build_python.sh
+```
+
+The python module will be put in `module`.
 
 ## Platform
 
