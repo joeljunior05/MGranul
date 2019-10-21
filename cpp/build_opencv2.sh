@@ -11,7 +11,7 @@ cmake .  -DBUILD_opencv_calib3d=OFF -DBUILD_opencv_ml=OFF -DBUILD_opencv_video=O
          -DBUILD_opencv_nonfree=OFF -DBUILD_opencv_contrib=OFF -DBUILD_opencv_python=OFF -DBUILD_opencv_stitching=OFF\
          -DBUILD_opencv_superres=OFF -DBUILD_opencv_ts=OFF -DBUILD_opencv_videostab=OFF -DBUILD_opencv_core=ON\
          -DBUILD_opencv_features2d=ON -DBUILD_opencv_imgproc=ON -DBUILD_opencv_highgui=ON -DBUILD_opencv_flann=ON\
-         -DCMAKE_INSTALL_PREFIX=$INSTALL . -B./build
+         -DWITH_CUDA=OFF -DCMAKE_INSTALL_PREFIX=$INSTALL . -B./build
 
 cd build
 make install
