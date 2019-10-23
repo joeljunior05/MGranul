@@ -1,7 +1,7 @@
 ###################################
 ###### BUILDING OPENCV 2 ##########
 ###################################
-git clone https://github.com/joeljunior05/opencv.git -b 2.4.13.7
+git clone --depth 1 --branch 2.4.13.7 https://github.com/joeljunior05/opencv.git
 CUR_FOLDER=`pwd`
 INSTALL=$CUR_FOLDER/local
 cd opencv
